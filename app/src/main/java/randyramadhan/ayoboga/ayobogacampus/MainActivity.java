@@ -8,6 +8,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -17,6 +18,7 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import java.util.Calendar;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -27,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
     RadioButton rb_gender;
     ListView lv_studentList;
     DatePickerDialog.OnDateSetListener dateSetListener;
+    ArrayAdapter studentArrayAdapter;
+    DataBaseHelper dataBaseHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +44,10 @@ public class MainActivity extends AppCompatActivity {
         et_address = findViewById(R.id.et_address);
         rg_gender = findViewById(R.id.rg_gender);
         lv_studentList = findViewById(R.id.lv_studentList);
+
+        dataBaseHelper = new DataBaseHelper(MainActivity.this);
+
+        ShowStudent(dataBaseHelper);
 
 
         et_Date.setOnClickListener(new View.OnClickListener() {
@@ -83,7 +91,6 @@ public class MainActivity extends AppCompatActivity {
                             et_Date.getText().toString(),
                             et_address.getText().toString()
                     );
-                    Toast.makeText(MainActivity.this,"Sukses Menyimpan Data " + studentModel.toString() , Toast.LENGTH_LONG ).show();
                 } catch (Exception e) {
                     Toast.makeText(MainActivity.this,"Gagal Menyimpan Data", Toast.LENGTH_LONG ).show();
                 }
@@ -91,17 +98,25 @@ public class MainActivity extends AppCompatActivity {
                 DataBaseHelper dataBaseHelper = new DataBaseHelper(MainActivity.this);
                 boolean success = dataBaseHelper.addOne(studentModel);
 
-                Toast.makeText(MainActivity.this, success ? "sukses!" : "Gagal", Toast.LENGTH_LONG).show();
+                ShowStudent(dataBaseHelper);
+
             }
         });
 
         btn_viewAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                DataBaseHelper dataBaseHelper = new DataBaseHelper(MainActivity.this);
+                ShowStudent(dataBaseHelper);
 
             }
         });
 
 
+    }
+
+    private void ShowStudent(DataBaseHelper dataBaseHelper) {
+        studentArrayAdapter = new ArrayAdapter<StudentModel>(MainActivity.this, android.R.layout.simple_list_item_1, dataBaseHelper.getStudents());
+        lv_studentList.setAdapter(studentArrayAdapter);
     }
 }

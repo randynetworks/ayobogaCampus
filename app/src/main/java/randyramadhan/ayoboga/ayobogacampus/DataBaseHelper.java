@@ -2,10 +2,14 @@ package randyramadhan.ayoboga.ayobogacampus;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DataBaseHelper extends SQLiteOpenHelper {
     private static final String STUDENT_TABLE = "STUDENT_TABLE";
@@ -48,5 +52,33 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         long insert = db.insert(STUDENT_TABLE, null, cv);
         return insert != -1;
+    }
+    
+    public List<StudentModel> getStudents() {
+        List<StudentModel> returnList = new ArrayList<>();
+        
+        // get data
+        String queryString = "SELECT * FROM " + STUDENT_TABLE;
+        
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(queryString, null);
+
+        if (cursor.moveToFirst()){
+            do {
+                int id = cursor.getInt(0);
+                String name = cursor.getString(1);
+                String jk = cursor.getString(2);
+                String date = cursor.getString(3);
+                String address = cursor.getString(4);
+
+                StudentModel newStudent = new StudentModel(id, name, jk, date, address);
+                returnList.add(newStudent);
+
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return returnList;
+
     }
 }

@@ -8,6 +8,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -107,6 +108,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 DataBaseHelper dataBaseHelper = new DataBaseHelper(MainActivity.this);
+                ShowStudent(dataBaseHelper);
+
+            }
+        });
+
+        lv_studentList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                StudentModel clickstudent = (StudentModel) parent.getItemAtPosition(position);
+
+                dataBaseHelper.deleteOne(clickstudent);
                 ShowStudent(dataBaseHelper);
 
             }

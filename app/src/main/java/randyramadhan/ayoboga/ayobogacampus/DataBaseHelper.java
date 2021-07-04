@@ -53,6 +53,13 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         long insert = db.insert(STUDENT_TABLE, null, cv);
         return insert != -1;
     }
+
+    public boolean deleteOne(StudentModel studentModel) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "DELETE FROM " + STUDENT_TABLE + " WHERE " + COLUMN_ID + " = " + studentModel.getId();
+        Cursor cursor = db.rawQuery(query, null);
+        return cursor.moveToFirst();
+    }
     
     public List<StudentModel> getStudents() {
         List<StudentModel> returnList = new ArrayList<>();

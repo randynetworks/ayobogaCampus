@@ -73,9 +73,10 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 rb_gender = findViewById(rg_gender.getCheckedRadioButtonId());
-                System.out.println(rb_gender.getText().toString());
+                StudentModel studentModel = null;
+
                 try {
-                    StudentModel studentModel = new StudentModel(
+                    studentModel = new StudentModel(
                             -1,
                             et_student.getText().toString(),
                             rb_gender.getText().toString(),
@@ -86,6 +87,11 @@ public class MainActivity extends AppCompatActivity {
                 } catch (Exception e) {
                     Toast.makeText(MainActivity.this,"Gagal Menyimpan Data", Toast.LENGTH_LONG ).show();
                 }
+
+                DataBaseHelper dataBaseHelper = new DataBaseHelper(MainActivity.this);
+                boolean success = dataBaseHelper.addOne(studentModel);
+
+                Toast.makeText(MainActivity.this, success ? "sukses!" : "Gagal", Toast.LENGTH_LONG).show();
             }
         });
 

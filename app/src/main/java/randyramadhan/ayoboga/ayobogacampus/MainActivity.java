@@ -2,7 +2,9 @@ package randyramadhan.ayoboga.ayobogacampus;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -19,7 +21,6 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import java.util.Calendar;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -39,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         btn_add = findViewById(R.id.btn_add);
-        btn_viewAll = findViewById(R.id.btn_view_all);
         et_student = findViewById(R.id.et_student_name);
         et_Date = findViewById(R.id.et_date);
         et_address = findViewById(R.id.et_address);
@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
                 DatePickerDialog dialog = new DatePickerDialog(
                         MainActivity.this,R.style.Theme_AppCompat_Light_Dialog, dateSetListener , year, month, day);
-                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLUE));
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.MAGENTA));
                 dialog.show();
             }
         });
@@ -81,46 +81,95 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                rb_gender = findViewById(rg_gender.getCheckedRadioButtonId());
-                StudentModel studentModel = null;
+                AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
+                dialog.setTitle("Yakin disimpan?");
+                dialog.setMessage("Hi! Apakah data yang dimasukan Valid?");
 
-                try {
-                    studentModel = new StudentModel(
-                            -1,
-                            et_student.getText().toString(),
-                            rb_gender.getText().toString(),
-                            et_Date.getText().toString(),
-                            et_address.getText().toString()
-                    );
-                } catch (Exception e) {
-                    Toast.makeText(MainActivity.this,"Gagal Menyimpan Data", Toast.LENGTH_LONG ).show();
-                }
+                dialog.setPositiveButton("Yup!", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        rb_gender = findViewById(rg_gender.getCheckedRadioButtonId());
+                        StudentModel studentModel = null;
 
-                DataBaseHelper dataBaseHelper = new DataBaseHelper(MainActivity.this);
-                boolean success = dataBaseHelper.addOne(studentModel);
+                        try {
+                            studentModel = new StudentModel(
+                                    -1,
+                                    et_student.getText().toString(),
+                                    rb_gender.getText().toString(),
+                                    et_Date.getText().toString(),
+                                    et_address.getText().toString()
+                            );
+                        } catch (Exception e) {
+                            Toast.makeText(MainActivity.this,"Gagal Menyimpan Data", Toast.LENGTH_LONG ).show();
+                        }
 
-                ShowStudent(dataBaseHelper);
+                        DataBaseHelper dataBaseHelper = new DataBaseHelper(MainActivity.this);
+                        boolean success = dataBaseHelper.addOne(studentModel);
+
+                        et_student.setText("");
+                        rb_gender.setChecked(false);
+                        et_Date.setText("");
+                        et_address.setText("");
+
+                        ShowStudent(dataBaseHelper);
+
+                        Toast.makeText(MainActivity.this, "Data Disimpan.", Toast.LENGTH_LONG).show();
+                    }
+                });
+                dialog.setNegativeButton("Engga", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(MainActivity.this, "Data gak Disimpan.", Toast.LENGTH_LONG).show();
+                    }
+                });
+
+                dialog.setCancelable(false);
+                AlertDialog alertDialog = dialog.create();
+                alertDialog.show();
+
 
             }
         });
 
-        btn_viewAll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DataBaseHelper dataBaseHelper = new DataBaseHelper(MainActivity.this);
-                ShowStudent(dataBaseHelper);
-
-            }
-        });
 
         lv_studentList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                StudentModel clickstudent = (StudentModel) parent.getItemAtPosition(position);
+                Toast.makeText(MainActivity.this,"narutooo", Toast.LENGTH_LONG ).show();
+            }
+        });
 
-                dataBaseHelper.deleteOne(clickstudent);
-                ShowStudent(dataBaseHelper);
+        lv_studentList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
+                dialog.setTitle("Yakin di hapus?");
+                dialog.setMessage("Hi! Apakah data ingin di hapus?");
 
+                dialog.setPositiveButton("Yup!", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        StudentModel clickstudent = (StudentModel) parent.getItemAtPosition(position);
+
+                        dataBaseHelper.deleteOne(clickstudent);
+                        ShowStudent(dataBaseHelper);
+
+                        Toast.makeText(MainActivity.this, "Data Dihapus.", Toast.LENGTH_LONG).show();
+
+                    }
+                });
+                dialog.setNegativeButton("Engga", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(MainActivity.this, "Data Engga dihapus!.", Toast.LENGTH_LONG).show();
+                    }
+                });
+
+                dialog.setCancelable(false);
+                AlertDialog alertDialog = dialog.create();
+                alertDialog.show();
+
+                return false;
             }
         });
 
